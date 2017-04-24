@@ -1,5 +1,8 @@
+const Microframe = require('microframe')
+
 function MicroVirtualList(container, config) {
   const total = config.total
+  const frame = Microframe()
 
   // Our shadow element to show a correct scroll bar
   const scroller = document.createElement('tr');
@@ -32,7 +35,8 @@ function MicroVirtualList(container, config) {
   // stores the last scrollTop
   let lastRepaint
 
-  render()
+  onscroll()
+  container.addEventListener('scroll', onscroll)
 
   function setContainerHeight(height) {
     visibleCache = Math.ceil(height / averageHeight) * 3
@@ -75,7 +79,7 @@ function MicroVirtualList(container, config) {
     const scrollTop = container.scrollTop
 
     if (lastRepaint === scrollTop) {
-      return requestAnimationFrame(render)
+      return
     }
 
     let from = getFrom() - 1
@@ -115,11 +119,14 @@ function MicroVirtualList(container, config) {
 
     container.innerHTML = ''
     container.appendChild(fragment)
-    requestAnimationFrame(render)
+  }
+
+  function onscroll() {
+    frame(render)
   }
 
   function destroy() {
-    cancelAnimationFrame(render)
+    container.removeEventListener('scroll', onscroll)
   }
 
   return {
