@@ -21,6 +21,7 @@ MicroVirtualList(container, {
   height: 700, // desired container height
   total: 10000, // total number of rows
   itemHeight: 70, // a row height
+  bounce: 10, // default bounce timeout for scroll event, usefull for free wheel mouse for example
   getRow: (i) => {
     const el = document.createElement('div')
     el.innerText = 'Row: ' + i
