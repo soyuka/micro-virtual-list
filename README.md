@@ -57,6 +57,24 @@ MicroVirtualList(container, {
 })
 ```
 
+### Public methods
+
+```javascript
+const virtualList = MicroVirtualList(container, {total: 100, height: 400, itemHeight: 200, getRow: (i) => {
+  let el = document.createElement('div')
+  el.innerText = 'Row: ' + i
+  return el
+}})
+
+
+window.onresize = function() {
+  virtualList.setContainerHeight(600)
+  virtualList.refresh()
+}
+```
+
+You can also use `virtualList.destroy()` (internally executes `cancelAnimationFrame`)
+
 ## References
 
 - https://github.com/tbranyen/hyperlist

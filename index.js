@@ -1,7 +1,4 @@
 function MicroVirtualList(container, config) {
-  // Set up container, block display has to be forced on tables
-  container.setAttribute('style', `width:100%;height:${config.height}px;overflow:auto;position:relative;padding:0;display:block;`)
-
   const total = config.total
 
   // Our shadow element to show a correct scroll bar
@@ -28,12 +25,20 @@ function MicroVirtualList(container, config) {
 
   // Visible elements
   const averageHeight = scrollHeight / total
-  const visibleCache = Math.ceil(config.height / averageHeight) * 3
+  let visibleCache
+
+  setContainerHeight(config.height)
 
   // stores the last scrollTop
   let lastRepaint
 
   render()
+
+  function setContainerHeight(height) {
+    visibleCache = Math.ceil(height / averageHeight) * 3
+    // Set up container, block display has to be forced on tables
+    container.setAttribute('style', `width:100%;height:${height}px;overflow:auto;position:relative;padding:0;display:block;`)
+  }
 
   function computeScrollHeight() {
     const scrollHeight = heights.reduce((a, b) => a + b, 0)
@@ -118,7 +123,9 @@ function MicroVirtualList(container, config) {
   }
 
   return {
-    destroy: destroy
+    destroy: destroy,
+    refresh: render,
+    setContainerHeight: setContainerHeight
   }
 }
 

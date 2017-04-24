@@ -9,7 +9,7 @@
 
     const heights = new Array(total).fill(0).map((e) => Math.floor(Math.random() * (20 - 70) + 70))
 
-    MicroVirtualList(container, {
+    const list = MicroVirtualList(container, {
       total: total,
       itemHeight: itemHeight,
       height: 400,
@@ -25,5 +25,10 @@
         return {element: el, height: heights[i]}
       }
     })
+
+    window.onresize = function() {
+      list.setContainerHeight(window.innerHeight - 100)
+      list.refresh()
+    }
   </script>
 </body>
