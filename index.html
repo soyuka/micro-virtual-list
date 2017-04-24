@@ -1,0 +1,29 @@
+<body>
+  <table id="foo">
+  </table>
+  <script src="dist/micro-virtual-list.js"></script>
+  <script type="text/javascript">
+    const container = document.getElementById('foo')
+    const total = 200000
+    const itemHeight = 70
+
+    const heights = new Array(total).fill(0).map((e) => Math.floor(Math.random() * (20 - 70) + 70))
+
+    MicroVirtualList(container, {
+      total: total,
+      itemHeight: itemHeight,
+      height: 400,
+      getRow: (i) => {
+        const el = document.createElement('tbody')
+        const tr = document.createElement('tr')
+        const td = document.createElement('td')
+        td.innerText = 'Row: ' + i + ' ( '+heights[i]+'px )'
+
+        tr.appendChild(td)
+        el.appendChild(tr)
+
+        return {element: el, height: heights[i]}
+      }
+    })
+  </script>
+</body>

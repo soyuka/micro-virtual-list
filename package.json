@@ -1,0 +1,30 @@
+{
+  "name": "micro-virtual-list",
+  "version": "1.0.0",
+  "description": "Micro virtual list",
+  "main": "dist/micro-virtual-list.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify -s MicroVirtualList -t babelify index.js -o dist/micro-virtual-list.js",
+    "build-min": "browserify -s MicroVirtualList -g uglifyify -t babelify index.js -o dist/micro-virtual-list.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/soyuka/micro-virtual-list.git"
+  },
+  "keywords": [
+    "virtual",
+    "list"
+  ],
+  "author": "soyuka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/soyuka/micro-virtual-list/issues"
+  },
+  "homepage": "https://github.com/soyuka/micro-virtual-list#readme",
+  "devDependencies": {
+    "babel-preset-env": "^1.4.0",
+    "babelify": "^7.3.0",
+    "browserify": "^14.3.0"
+  }
+}
