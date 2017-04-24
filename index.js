@@ -36,7 +36,9 @@ function MicroVirtualList(container, config) {
 
   // stores the last scrollTop
   let lastRepaint
+  let lastFrom
 
+  //init
   onscroll()
   container.addEventListener('scroll', onscroll)
 
@@ -86,6 +88,12 @@ function MicroVirtualList(container, config) {
 
     let from = getFrom() - 1
     from = from < 0 ? 0 : from
+
+    if (lastFrom === from) {
+      return
+    }
+
+    lastFrom = from
 
     let to = from + visibleCache
     to = to > total ? total : to
