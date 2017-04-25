@@ -30,6 +30,8 @@ MicroVirtualList(container, {
 })
 ```
 
+If you don't want to `bounce`, you can set the option to `false`.
+
 ### Dynamic heights
 
 ```javascript
