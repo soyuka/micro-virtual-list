@@ -1,10 +1,14 @@
 const Microframe = require('microframe')
 const NanoBounce = require('nanobounce')
 
+function noop(cb) {
+  cb()
+}
+
 function MicroVirtualList(container, config) {
   const total = config.total
   const frame = Microframe()
-  const bounce = NanoBounce(config.bounce === undefined ? 10 : config.bounce)
+  const bounce = config.bounce === false ? noop : NanoBounce(config.bounce === undefined ? 10 : config.bounce)
 
   // Our shadow element to show a correct scroll bar
   const scroller = document.createElement('tr');
@@ -139,6 +143,7 @@ function MicroVirtualList(container, config) {
 
   function destroy() {
     container.removeEventListener('scroll', onscroll)
+    container.innerHTML = ''
   }
 
   return {
