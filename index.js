@@ -1,14 +1,6 @@
-const Microframe = require('microframe')
-const NanoBounce = require('nanobounce')
-
-function noop(cb) {
-  cb()
-}
-
 function MicroVirtualList(container, config) {
   const total = config.total
   const frame = Microframe()
-  const bounce = config.bounce === false ? noop : NanoBounce(config.bounce === undefined ? 10 : config.bounce)
 
   // Our shadow element to show a correct scroll bar
   const scroller = document.createElement('tr');
@@ -41,10 +33,22 @@ function MicroVirtualList(container, config) {
   // stores the last scrollTop
   let lastRepaint
   let lastFrom
+  let lastFrame = +new Date;
+  let currentAnimationFrameId
 
   //init
-  onscroll()
-  container.addEventListener('scroll', onscroll)
+  loop(lastFrame)
+
+  function loop(now) {
+    const deltaT = now - lastFrame
+
+    if (deltaT < 160) {
+      render()
+    }
+
+    lastFrame = now
+    currentAnimationFrameId = requestAnimationFrame(loop)
+  }
 
   function setContainerHeight(height) {
     visibleCache = Math.ceil(height / averageHeight) * 3
@@ -135,14 +139,8 @@ function MicroVirtualList(container, config) {
     container.appendChild(fragment)
   }
 
-  function onscroll() {
-    bounce(function() {
-      frame(render)
-    })
-  }
-
   function destroy() {
-    container.removeEventListener('scroll', onscroll)
+    cancelAnimationFrame(currentAnimationFrameId)
     container.innerHTML = ''
   }
 
