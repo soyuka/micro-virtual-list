@@ -1,70 +1,92 @@
-function MicroVirtualList(container, config) {
-  const total = config.total
-  const frame = Microframe()
+const raf = require('raf')
 
-  // Our shadow element to show a correct scroll bar
-  const scroller = document.createElement('tr');
-
-  // Cache heights
-  const heights = new Array(total).fill(0).map((e, i) => {
-    let row = config.getRow(i)
-
-    if (row.height !== undefined) {
-      return row.height
-    }
-
-    return config.itemHeight
-  })
-
-  // Compute positions
-  const positions = new Array(total).fill(0)
-
-  computePositions()
-
-  // Scroll height
-  const scrollHeight = computeScrollHeight()
-
-  // Visible elements
-  const averageHeight = scrollHeight / total
+function MicroVirtualList (container, config) {
+  let total
+  let heights = []
+  let positions = []
+  let scrollHeight
+  let averageHeight
   let visibleCache
-
-  setContainerHeight(config.height)
-
   // stores the last scrollTop
   let lastRepaint
+  // stores the last "from" index (rendering index start)
   let lastFrom
-  let lastFrame = +new Date;
   let currentAnimationFrameId
 
-  //init
-  loop(lastFrame)
+  // Our shadow element to show a correct scroll bar
+  const scroller = document.createElement('tr')
 
-  function loop(now) {
-    const deltaT = now - lastFrame
+  initConfig(config)
 
-    if (deltaT < 160) {
-      render()
+  // init
+  raf(function loop () {
+    render()
+    currentAnimationFrameId = raf(loop)
+  })
+
+  function replaceStyle (element, style) {
+    for (let i in style) {
+      if (element.style[i] !== style[i]) {
+        element.style[i] = style[i]
+      }
+    }
+  }
+
+  function initConfig (config) {
+    total = config.total
+
+    const style = {
+      height: config.height + 'px',
+      overflow: 'auto',
+      position: 'relative'
     }
 
-    lastFrame = now
-    currentAnimationFrameId = requestAnimationFrame(loop)
+    replaceStyle(container, style)
+
+    if (heights.length !== total) {
+      heights = new Array(total).fill(0)
+
+      if (config.preComputeHeights === true) {
+        heights.map((e, i) => {
+          let row = config.getRow(i)
+
+          if (row.height !== undefined) {
+            return row.height
+          }
+
+          return config.itemHeight
+        })
+      }
+
+      positions = new Array(total).fill(0)
+
+      computePositions()
+
+      // Scroll height
+      scrollHeight = computeScrollHeight()
+
+      // Visible elements
+      averageHeight = scrollHeight / total
+    }
+
+    visibleCache = Math.ceil(config.height / averageHeight) * 3
   }
 
-  function setContainerHeight(height) {
-    visibleCache = Math.ceil(height / averageHeight) * 3
-    // Set up container, block display has to be forced on tables
-    container.setAttribute('style', `width:100%;height:${height}px;overflow:auto;position:relative;padding:0;display:block;`)
-  }
-
-  function computeScrollHeight() {
+  function computeScrollHeight () {
     const scrollHeight = heights.reduce((a, b) => a + b, 0)
+    const style = {
+      opacity: 0,
+      position: 'absolute',
+      width: '1px',
+      height: `${scrollHeight}px`
+    }
 
-    scroller.setAttribute('style', `opacity:0;position:absolute;width:1px;height:${scrollHeight}px;`)
+    replaceStyle(scroller, style)
 
     return scrollHeight
   }
 
-  function computePositions(from = 1) {
+  function computePositions (from = 1) {
     if (from < 1) {
       from = 1
     }
@@ -75,7 +97,7 @@ function MicroVirtualList(container, config) {
   }
 
   // Get the index we start from
-  function getFrom() {
+  function getFrom () {
     const scrollTop = container.scrollTop
     let i = 0
 
@@ -87,7 +109,7 @@ function MicroVirtualList(container, config) {
   }
 
   // Render elements
-  function render() {
+  function render () {
     const scrollTop = container.scrollTop
 
     if (lastRepaint === scrollTop) {
@@ -124,11 +146,7 @@ function MicroVirtualList(container, config) {
 
       const top = positions[i]
 
-      element.setAttribute('style', `
-        ${element.style.cssText || ''}
-        position: absolute;
-        top: ${top}px;
-      `)
+      replaceStyle(element, {position: 'absolute', 'top': `${top}px`})
 
       fragment.appendChild(element)
     }
@@ -139,15 +157,17 @@ function MicroVirtualList(container, config) {
     container.appendChild(fragment)
   }
 
-  function destroy() {
-    cancelAnimationFrame(currentAnimationFrameId)
+  function destroy () {
+    raf.cancel(currentAnimationFrameId)
     container.innerHTML = ''
   }
 
   return {
     destroy: destroy,
-    refresh: render,
-    setContainerHeight: setContainerHeight
+    refresh: function refresh (config) {
+      initConfig(config)
+      render()
+    }
   }
 }
 

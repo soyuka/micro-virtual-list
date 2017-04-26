@@ -1,5 +1,5 @@
 <body>
-  <table id="foo">
+  <table id="foo" style="display:block;">
   </table>
   <script src="dist/micro-virtual-list.js"></script>
   <script type="text/javascript">
@@ -9,7 +9,7 @@
 
     const heights = new Array(total).fill(0).map((e) => Math.floor(Math.random() * (20 - 70) + 70))
 
-    const list = MicroVirtualList(container, {
+    const config = {
       total: total,
       itemHeight: itemHeight,
       height: 400,
@@ -24,11 +24,13 @@
 
         return {element: el, height: heights[i]}
       }
-    })
+    }
+
+    const list = MicroVirtualList(container, config)
 
     window.onresize = function() {
-      list.setContainerHeight(window.innerHeight - 100)
-      list.refresh()
+      config.height = window.innerHeight - 100
+      list.refresh(config)
     }
   </script>
 </body>

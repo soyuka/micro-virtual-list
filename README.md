@@ -42,6 +42,7 @@ const heights = new Array(total).fill(0).map((e) => Math.floor(Math.random() * (
 MicroVirtualList(container, {
   total: total,
   itemHeight: itemHeight,
+  preComputeHeights: true, // Will call `getRow` on every rows before the first render to find out heights
   height: 400,
   getRow: (i) => {
     const el = document.createElement('tbody')
@@ -60,16 +61,22 @@ MicroVirtualList(container, {
 ### Public methods
 
 ```javascript
-const virtualList = MicroVirtualList(container, {total: 100, height: 400, itemHeight: 200, getRow: (i) => {
-  let el = document.createElement('div')
-  el.innerText = 'Row: ' + i
-  return el
-}})
+let config = {
+  total: 100,
+  height: 400,
+  itemHeight: 200,
+  getRow: (i) => {
+    let el = document.createElement('div')
+    el.innerText = 'Row: ' + i
+    return el
+  }
+}
 
+const virtualList = MicroVirtualList(container, config)
 
 window.onresize = function() {
-  virtualList.setContainerHeight(600)
-  virtualList.refresh()
+  config.height = 500
+  virtualList.refresh(config)
 }
 ```
 

@@ -28,7 +28,6 @@
     "browserify": "^14.3.0"
   },
   "dependencies": {
-    "microframe": "^1.0.0",
-    "nanobounce": "^1.0.1"
+    "raf": "^3.3.0"
   }
 }
