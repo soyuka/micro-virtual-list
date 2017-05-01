@@ -1,3 +1,5 @@
+## Please don't use this module! It was an experiment to introduce dynamic heights on https://github.com/tbranyen/hyperlist  which now supports it!
+
 Micro Virtual List
 ==================
 
